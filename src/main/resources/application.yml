@@ -1,0 +1,8 @@
+server:
+  port: 8087
+spring:
+  application:
+    name: resource-scheduler
+logging:
+  level:
+    com.example.resourcescheduler: DEBUG

@@ -1,8 +1,8 @@
-package com.example.resourcescheduler.service;
+package com.tangrd.resourcescheduler.service;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -18,19 +18,15 @@ import java.util.concurrent.TimeUnit;
  */
 @Component
 @Profile("test")
+@RequiredArgsConstructor
 public class ResourceAccessServiceTest implements CommandLineRunner {
   private static final Logger logger = LoggerFactory.getLogger(ResourceAccessServiceTest.class);
 
   private final ResourceAccessService resourceAccessService;
 
-  @Autowired
-  public ResourceAccessServiceTest(ResourceAccessService resourceAccessService) {
-    this.resourceAccessService = resourceAccessService;
-  }
-
   @Override
   public void run(String... args) {
-    logger.info("开始测试资源访问服务...");
+    logger.info("Starting resource access tests...");
 
     // 1. 测试顺序访问
     testSequentialAccess();
@@ -41,20 +37,20 @@ public class ResourceAccessServiceTest implements CommandLineRunner {
     // 3. 测试优先级调度
     testPriorityScheduling();
 
-    logger.info("测试完成！");
+    logger.info("Tests completed!");
   }
 
   private void testSequentialAccess() {
-    logger.info("=== 测试顺序访问 ===");
+    logger.info("=== Sequential access test ===");
 
     for (int i = 0; i < 3; i++) {
       String result = resourceAccessService.accessResource(1);
-      logger.info("顺序访问结果: {}", result);
+      logger.info("Sequential access result: {}", result);
     }
   }
 
   private void testParallelAccess() {
-    logger.info("=== 测试并行访问 ===");
+    logger.info("=== Parallel access test ===");
 
     ExecutorService executor = Executors.newFixedThreadPool(5);
     CompletableFuture<?>[] futures = new CompletableFuture[5];
@@ -63,7 +59,7 @@ public class ResourceAccessServiceTest implements CommandLineRunner {
       final int index = i;
       futures[i] = CompletableFuture.runAsync(() -> {
         String result = resourceAccessService.accessResource(1);
-        logger.info("并行访问 #{} 结果: {}", index, result);
+        logger.info("Parallel access #{} result: {}", index, result);
       }, executor);
     }
 
@@ -72,7 +68,7 @@ public class ResourceAccessServiceTest implements CommandLineRunner {
   }
 
   private void testPriorityScheduling() {
-    logger.info("=== 测试优先级调度 ===");
+    logger.info("=== Priority scheduling test ===");
 
     ExecutorService executor = Executors.newFixedThreadPool(10);
 
@@ -83,9 +79,9 @@ public class ResourceAccessServiceTest implements CommandLineRunner {
         try {
           TimeUnit.MILLISECONDS.sleep(100 * index);
           String result = resourceAccessService.accessResource(1);
-          logger.info("低优先级请求 #{} 结果: {}", index, result);
+          logger.info("Low priority task #{} result: {}", index, result);
         } catch (Exception e) {
-          logger.error("请求出错", e);
+          logger.error("Task execution error", e);
         }
       }, executor);
     }
@@ -104,9 +100,9 @@ public class ResourceAccessServiceTest implements CommandLineRunner {
         try {
           TimeUnit.MILLISECONDS.sleep(100 * index);
           String result = resourceAccessService.accessResource(5);
-          logger.info("中优先级请求 #{} 结果: {}", index, result);
+          logger.info("Medium priority task #{} result: {}", index, result);
         } catch (Exception e) {
-          logger.error("请求出错", e);
+          logger.error("Task execution error", e);
         }
       }, executor);
     }
@@ -125,9 +121,9 @@ public class ResourceAccessServiceTest implements CommandLineRunner {
         try {
           TimeUnit.MILLISECONDS.sleep(100 * index);
           String result = resourceAccessService.accessResource(10);
-          logger.info("高优先级请求 #{} 结果: {}", index, result);
+          logger.info("High priority task #{} result: {}", index, result);
         } catch (Exception e) {
-          logger.error("请求出错", e);
+          logger.error("Task execution error", e);
         }
       }, executor);
     }
@@ -137,7 +133,7 @@ public class ResourceAccessServiceTest implements CommandLineRunner {
     try {
       executor.awaitTermination(30, TimeUnit.MINUTES);
     } catch (InterruptedException e) {
-      logger.error("等待任务完成被中断", e);
+      logger.error("Task completion wait interrupted", e);
       Thread.currentThread().interrupt();
     }
   }

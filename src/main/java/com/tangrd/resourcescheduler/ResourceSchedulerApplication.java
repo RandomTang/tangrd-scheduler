@@ -1,4 +1,4 @@
-package com.example.resourcescheduler;
+package com.tangrd.resourcescheduler;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

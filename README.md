@@ -1,92 +1,92 @@
-# 资源调度器
+# Resource Scheduler
 
-该项目是一个Spring Boot应用程序，实现了一个资源访问调度器，它能够：
+This is a Spring Boot application that implements a resource access scheduler with the following capabilities:
 
-1. 限制资源访问频率 - 每两分钟最多访问一次
-2. 防止并发访问 - 同一时间只允许一个请求访问资源
-3. 支持优先级调度 - 高优先级请求会优先处理
+1. Limit resource access frequency - maximum one access every two minutes
+2. Prevent concurrent access - only allow one request to access the resource at the same time
+3. Support priority-based scheduling - high priority requests are processed first
 
-## 技术栈
+## Technology Stack
 
 - Java 21
 - Spring Boot 3.2.0
 - Gradle
 
-## 主要特性
+## Key Features
 
-- 资源访问频率限制：每两分钟最多访问一次
-- 并发访问控制：使用信号量确保同一时间只有一个线程访问资源
-- 优先级队列：高优先级请求会优先得到处理
-- 提供了REST API接口进行测试
+- Resource access frequency limitation: Maximum one access every two minutes
+- Concurrent access control: Using semaphore to ensure only one thread accesses the resource at a time
+- Priority queue: High priority requests are processed first
+- Provides REST API interfaces for testing
 
-## 如何运行
+## How to Run
 
-1. 确保您安装了JDK 21和Gradle
-2. 使用以下命令启动应用程序：
+1. Make sure you have JDK 21 and Gradle installed
+2. Use the following command to start the application:
 
 ```bash
 gradle bootRun
 ```
 
-3. 服务将在 http://localhost:8080 上启动
+3. The service will start at http://localhost:8080
 
-## API 接口
+## API Endpoints
 
-### 1. 单次资源访问
-
-```
-GET /api/resource/access?priority={优先级}
-```
-
-- `priority`: 请求优先级，数字越大优先级越高，默认为0
-
-### 2. 顺序多次访问
+### 1. Single Resource Access
 
 ```
-GET /api/resource/access-sequential?count={请求次数}&startPriority={起始优先级}
+GET /api/resource/access?priority={priority}
 ```
 
-- `count`: 请求次数，默认为10
-- `startPriority`: 起始优先级，每个后续请求优先级+1，默认为0
+- `priority`: Request priority, higher number means higher priority, default is 0
 
-### 3. 并行多次访问
+### 2. Sequential Multiple Access
 
 ```
-GET /api/resource/access-parallel?count={请求次数}&startPriority={起始优先级}
+GET /api/resource/access-sequential?count={requestCount}&startPriority={startingPriority}
 ```
 
-- `count`: 请求次数，默认为10
-- `startPriority`: 起始优先级，每个后续请求优先级+1，默认为0
+- `count`: Number of requests, default is 10
+- `startPriority`: Starting priority, each subsequent request increases priority by 1, default is 0
 
-### 4. 混合优先级测试
+### 3. Parallel Multiple Access
+
+```
+GET /api/resource/access-parallel?count={requestCount}&startPriority={startingPriority}
+```
+
+- `count`: Number of requests, default is 10
+- `startPriority`: Starting priority, each subsequent request increases priority by 1, default is 0
+
+### 4. Mixed Priority Test
 
 ```
 GET /api/resource/mixed-priority-test
 ```
 
-该接口会并行发起不同优先级的请求，测试优先级调度功能。
+This endpoint submits requests with different priorities in parallel to test the priority scheduling functionality.
 
-## 示例
+## Examples
 
-1. 发起一个优先级为5的单次访问：
+1. Make single access with priority 5:
 
 ```
 curl http://localhost:8080/api/resource/access?priority=5
 ```
 
-2. 顺序发起3次访问，优先级从1开始：
+2. Sequentially make 3 accesses starting with priority 1:
 
 ```
 curl http://localhost:8080/api/resource/access-sequential?count=3&startPriority=1
 ```
 
-3. 并行发起5次访问：
+3. Parallel make 5 accesses:
 
 ```
 curl http://localhost:8080/api/resource/access-parallel?count=5
 ```
 
-4. 测试优先级队列功能：
+4. Test priority queue functionality:
 
 ```
 curl http://localhost:8080/api/resource/mixed-priority-test
