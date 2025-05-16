@@ -13,8 +13,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 仅在测试配置文件激活时运行的测试类
- * 使用方法：在启动参数中添加 -Dspring.profiles.active=test
+ * Test class that runs only when the test profile is active
+ * Usage: Add -Dspring.profiles.active=test to the startup parameters
  */
 @Component
 @Profile("test")
@@ -28,13 +28,13 @@ public class ResourceAccessServiceTest implements CommandLineRunner {
   public void run(String... args) {
     logger.info("Starting resource access tests...");
 
-    // 1. 测试顺序访问
+    // 1. Test sequential access
     testSequentialAccess();
 
-    // 2. 测试并行访问
+    // 2. Test parallel access
     testParallelAccess();
 
-    // 3. 测试优先级调度
+    // 3. Test priority scheduling
     testPriorityScheduling();
 
     logger.info("Tests completed!");
@@ -72,7 +72,7 @@ public class ResourceAccessServiceTest implements CommandLineRunner {
 
     ExecutorService executor = Executors.newFixedThreadPool(10);
 
-    // 提交低优先级请求
+    // Submit low priority requests
     for (int i = 0; i < 3; i++) {
       final int index = i;
       CompletableFuture.runAsync(() -> {
@@ -86,14 +86,14 @@ public class ResourceAccessServiceTest implements CommandLineRunner {
       }, executor);
     }
 
-    // 等待一下，然后提交中优先级请求
+    // Wait a bit, then submit medium priority requests
     try {
       TimeUnit.SECONDS.sleep(1);
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
     }
 
-    // 提交中优先级请求
+    // Submit medium priority requests
     for (int i = 0; i < 3; i++) {
       final int index = i;
       CompletableFuture.runAsync(() -> {
@@ -107,14 +107,14 @@ public class ResourceAccessServiceTest implements CommandLineRunner {
       }, executor);
     }
 
-    // 再等待一下，然后提交高优先级请求
+    // Wait again, then submit high priority requests
     try {
       TimeUnit.SECONDS.sleep(1);
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
     }
 
-    // 提交高优先级请求
+    // Submit high priority requests
     for (int i = 0; i < 3; i++) {
       final int index = i;
       CompletableFuture.runAsync(() -> {
@@ -128,7 +128,7 @@ public class ResourceAccessServiceTest implements CommandLineRunner {
       }, executor);
     }
 
-    // 等待所有任务完成
+    // Wait for all tasks to complete
     executor.shutdown();
     try {
       executor.awaitTermination(30, TimeUnit.MINUTES);
